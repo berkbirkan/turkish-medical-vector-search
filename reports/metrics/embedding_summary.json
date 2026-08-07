@@ -1,0 +1,15 @@
+{
+  "chunk_count": 1019,
+  "model_id": "magibu/embeddingmagibu-200m",
+  "dimension": 768,
+  "dtype": "float32",
+  "normalize": true,
+  "batch_size": 32,
+  "source_sha256": "e5b5f364f217284ccfdeb3b533def2dcced2fc807f0168ebf869d03d8a337f71",
+  "checkpoint_fingerprint": "c0ed7794a0e6e801401edcff267bf611846144de1522b41dca3fd578fa512288",
+  "tokenizer_patch": "not_applied_custom_split_pretokenizer",
+  "norm_min": 0.9999998807907104,
+  "norm_mean": 1.0,
+  "norm_max": 1.0000001192092896,
+  "finite_values": true
+}
