@@ -27,6 +27,14 @@ Bu veri kümesi, `umutertugrul/turkish-medical-articles` koleksiyonundaki
 Dermatoloji branşından deterministik olarak seçilen 500 Türkçe makalenin
 arama odaklı chunk ve embedding temsillerini içerir.
 
+## Teslim bağlantıları
+
+- Kaynak kod: [GitHub — turkish-medical-vector-search](https://github.com/berkbirkan/turkish-medical-vector-search)
+- Hugging Face veri kümesi: [berkbirkan/turkish-dermatology-rag-dataset](https://huggingface.co/datasets/berkbirkan/turkish-dermatology-rag-dataset)
+- Notebook: [`notebooks/turkish_medical_vector_search.ipynb`](notebooks/turkish_medical_vector_search.ipynb)
+- 30 soruluk test seti: [`data/benchmark/test.jsonl`](data/benchmark/test.jsonl)
+- Threshold raporu: [`reports/metrics/threshold_evaluation.json`](reports/metrics/threshold_evaluation.json)
+
 > Eğitim ve bilgi erişim araştırması içindir. Klinik karar desteği, tanı veya
 > tedavi amacıyla kullanılmamalıdır.
 
@@ -53,6 +61,34 @@ kümesinin güncel erişim koşullarını ayrıca incelemelidir.
 
 Toplam 500 parent makaleden 1.019 chunk oluşturuldu. Başlık her chunk'a dahil
 edilir ve token bütçesinin parçasıdır.
+
+### Chunking stratejisi ve seçim gerekçesi
+
+Salt sabit karakter bölme, tıbbi cümleleri ve paragraf bağlamını rastgele
+kesebildiği için tercih edilmedi. Tam semantik chunking ise ek bir model,
+değişken karar sınırları ve daha yüksek yeniden üretim maliyeti doğurur. Bu
+nedenle deterministik **mixed chunking** kullanıldı:
+
+1. Önce kaynak paragraf ve satır sınırları korunur.
+2. Token bütçesini aşan paragraflar cümle sınırlarından bölünür.
+3. Tek başına uzun cümleler model tokenizerı ile token düzeyinde bölünür.
+4. Küçük birimler 512 token bütçesine kadar birleştirilir.
+5. Komşu chunk'lar arasında 64 token overlap bırakılır.
+6. Makale başlığı her chunk'a eklenir ve 512 token sınırına dahil edilir.
+
+Bu yaklaşım hem okunabilir tıbbi bağlamı korur hem de aynı kaynak ve
+konfigürasyonla tekrarlandığında aynı chunk'ları üretir. Sonuçta 1.019 chunk'ın
+hiçbiri 512 token sınırını aşmamış ve 500 makalenin tamamı temsil edilmiştir.
+
+### Embedding modeli ve seçim gerekçesi
+
+[`magibu/embeddingmagibu-200m`](https://huggingface.co/magibu/embeddingmagibu-200m)
+ödevde önerilen, Türkçe odaklı bir Sentence Transformers modelidir. Yaklaşık
+200 milyon parametreyle yerel/Colab kullanımına görece uygun olması, 8.192 token
+context window sunması ve query/document ayrımlı semantik arama kodlama yolları
+sağlaması nedeniyle seçildi. Model her chunk için 768 boyutlu, `float32` ve
+L2-normalized vektör üretir. Aynı modelin query-specific kodlama yolu soruların
+vektörleştirilmesinde kullanılır.
 
 ## Şema
 
@@ -88,6 +124,41 @@ Eşik yalnızca ayrı bir 10 pozitif + 10 negatif kalibrasyon setinde belirlendi
 `0.4451`. Eşik sabit tutularak 20 pozitif + 10 negatif bağımsız testte
 answerability precision, recall ve F1 değerleri 1,00 elde edildi. Bu kontrollü ve
 küçük benchmark sonucu genel klinik performans iddiası değildir.
+
+Yanlış bir tıbbi soruyu cevaplanabilir kabul etmek, cevaplanabilir bir soruyu
+reddetmekten daha riskli görüldüğü için threshold taramasında yanlış kabul
+maliyeti `2`, yanlış ret maliyeti `1` olarak kullanıldı. Yalnızca kalibrasyon
+setinde en yüksek negatif skor `0.43098`, en düşük pozitif skor `0.45928` oldu.
+Sınıflar ayrıldığı için uygulama eşiği bu iki sınırın orta noktası olan
+`0.44513` değerinden dört ondalığa yuvarlanarak **`0.4451`** seçildi. Test seti
+eşik seçiminde kullanılmadı.
+
+ChromaDB cosine distance döndürür; karşılaştırılan skor
+`cosine_similarity = 1 - cosine_distance` olarak hesaplanır. En iyi skor eşik
+altındaysa sistem LLM çağırmadan doğrudan şu çıktıyı verir:
+
+> Bu sorunun cevabı dokümanlarımda yer almamaktadır.
+
+Bağımsız testte 20/20 pozitif soru kabul edilmiş, 10/10 negatif soru reddedilmiş
+ve parent-document Recall@5 `0.95` bulunmuştur. Negatif sorulardaki ayırt edici
+yokluk terimlerinin 1.019 chunk'ın tamamında sıfır kez geçtiği ayrıca
+doğrulanmıştır.
+
+## Teslim paketindeki kod ve raporlar
+
+Bu Hugging Face reposu yalnızca Parquet dosyasını değil, ödevi yeniden üretmek
+için gereken teslim materyallerini de içerir:
+
+| Yol | İçerik |
+|---|---|
+| `src/` | Chunking, embedding, retrieval, ChromaDB ve opsiyonel üretim kodu |
+| `scripts/` | İndirme, seçim, chunking, embedding, benchmark ve dışa aktarma adımları |
+| `configs/default.yaml` | Sabit deney parametreleri |
+| `notebooks/` | Açıklamalı Colab/Jupyter notebook'u |
+| `data/benchmark/` | Kalibrasyon ve 20 pozitif + 10 negatif bağımsız test soruları |
+| `reports/metrics/` | Şema, embedding, threshold ve test sonuçları |
+| `reports/figures/` | Chunk ve threshold analiz grafikleri |
+| `tests/` | Veri sözleşmesi ve retrieval birim testleri |
 
 ## Sınırlılıklar ve sorumlu kullanım
 

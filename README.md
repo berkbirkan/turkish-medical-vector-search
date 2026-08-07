@@ -7,6 +7,20 @@ erişim projesi.
 Bu repo ana ödev kapsamını içerir. Dinamik dosya yükleme, Traditional RAG,
 Agentic RAG ve Hugging Face Space uygulaması ayrı bonus repoda geliştirilecektir.
 
+## Teslim bağlantıları
+
+- **Kaynak kod ve deney raporları:**
+  [GitHub — turkish-medical-vector-search](https://github.com/berkbirkan/turkish-medical-vector-search)
+- **Nihai chunk + embedding veri kümesi:**
+  [Hugging Face — turkish-dermatology-rag-dataset](https://huggingface.co/datasets/berkbirkan/turkish-dermatology-rag-dataset)
+- **Ana notebook:**
+  [`notebooks/turkish_medical_vector_search.ipynb`](notebooks/turkish_medical_vector_search.ipynb)
+- **30 soruluk bağımsız test seti:**
+  [`data/benchmark/test.jsonl`](data/benchmark/test.jsonl)
+
+Hugging Face teslim reposu veri dosyasının yanında yeniden üretim kodlarını,
+konfigürasyonu, notebook'u, benchmark sorularını ve metrik raporlarını da içerir.
+
 ## Kısa sonuç
 
 - `umutertugrul/turkish-medical-articles` kaynağından 500 dermatoloji makalesi
