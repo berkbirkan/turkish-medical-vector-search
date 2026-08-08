@@ -32,7 +32,7 @@ vector_store:
 
 retrieval:
   top_k: 5
-  threshold: 0.4451
+  threshold: 0.4240
   abstention_message: Bu sorunun cevabı dokümanlarımda yer almamaktadır.
 
 benchmark:

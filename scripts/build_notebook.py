@@ -385,8 +385,8 @@ plt.show()
         """
 ## 11. Sonuçların yorumu
 
-Bağımsız testte answerability precision, recall ve F1 1,00'dır. Buna karşılık
-exact chunk Recall@1 0,50 ve parent Recall@1 0,55'tir. Bazı sorularda aynı bilgiyi
+Bağımsız testte answerability precision 1,00, recall 0,95 ve F1 0,9744'tür.
+Exact chunk Recall@1 ve parent Recall@1 0,50'dir. Bazı sorularda aynı bilgiyi
 taşıyan alternatif makalelerin beklenen kanıtın önüne geçmesi bu farkı açıklar.
 Bu nedenle threshold başarısı, exact evidence ranking başarısıyla
 karıştırılmamalıdır.

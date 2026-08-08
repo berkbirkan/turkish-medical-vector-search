@@ -5,11 +5,11 @@
     "source_split": "calibration_only",
     "false_accept_cost": 2.0,
     "false_reject_cost": 1.0,
-    "selected_threshold": 0.44513314962387085,
-    "calibration_positive_score_min": 0.45928263664245605,
-    "calibration_positive_score_max": 0.7919008731842041,
-    "calibration_negative_score_min": 0.18131351470947266,
-    "calibration_negative_score_max": 0.43098366260528564
+    "selected_threshold": 0.4240220785140991,
+    "calibration_positive_score_min": 0.431279718875885,
+    "calibration_positive_score_max": 0.7740194797515869,
+    "calibration_negative_score_min": 0.22627627849578857,
+    "calibration_negative_score_max": 0.41676443815231323
   },
   "calibration": {
     "classification": {
@@ -33,10 +33,10 @@
       "parent_document_recall@5": 0.9
     },
     "error_analysis": {
-      "positive_score_min": 0.45928263664245605,
-      "positive_score_max": 0.7919008731842041,
-      "negative_score_min": 0.18131351470947266,
-      "negative_score_max": 0.43098366260528564,
+      "positive_score_min": 0.431279718875885,
+      "positive_score_max": 0.7740194797515869,
+      "negative_score_min": 0.22627627849578857,
+      "negative_score_max": 0.41676443815231323,
       "false_reject_question_ids": [],
       "false_accept_question_ids": [],
       "expected_parent_missing_at_5": [
@@ -49,37 +49,42 @@
   },
   "test": {
     "classification": {
-      "tp": 20,
-      "fn": 0,
+      "tp": 19,
+      "fn": 1,
       "fp": 0,
       "tn": 10,
       "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0,
-      "accuracy": 1.0,
+      "recall": 0.95,
+      "f1": 0.9743589743589743,
+      "accuracy": 0.9666666666666667,
       "negative_rejection_rate": 1.0,
-      "weighted_error_cost": 0.0
+      "weighted_error_cost": 1.0
     },
     "retrieval": {
       "exact_chunk_recall@1": 0.5,
-      "parent_document_recall@1": 0.55,
-      "exact_chunk_recall@3": 0.8,
-      "parent_document_recall@3": 0.85,
-      "exact_chunk_recall@5": 0.9,
-      "parent_document_recall@5": 0.95
+      "parent_document_recall@1": 0.5,
+      "exact_chunk_recall@3": 0.7,
+      "parent_document_recall@3": 0.7,
+      "exact_chunk_recall@5": 0.85,
+      "parent_document_recall@5": 0.85
     },
     "error_analysis": {
-      "positive_score_min": 0.45060253143310547,
-      "positive_score_max": 0.8242555856704712,
-      "negative_score_min": 0.11685401201248169,
-      "negative_score_max": 0.3318682909011841,
-      "false_reject_question_ids": [],
+      "positive_score_min": 0.40129029750823975,
+      "positive_score_max": 0.8251563906669617,
+      "negative_score_min": 0.11623877286911011,
+      "negative_score_max": 0.3402160406112671,
+      "false_reject_question_ids": [
+        "test_pos_08"
+      ],
       "false_accept_question_ids": [],
       "expected_parent_missing_at_5": [
-        "test_pos_02"
+        "test_pos_02",
+        "test_pos_10",
+        "test_pos_17"
       ],
       "expected_chunk_missing_at_5": [
         "test_pos_02",
+        "test_pos_10",
         "test_pos_17"
       ]
     }

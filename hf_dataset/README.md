@@ -121,16 +121,16 @@ aynı embedding modeliyle ve query-specific encoding yoluyla vektörleştirilmel
 ## Benchmark ve threshold
 
 Eşik yalnızca ayrı bir 10 pozitif + 10 negatif kalibrasyon setinde belirlendi:
-`0.4451`. Eşik sabit tutularak 20 pozitif + 10 negatif bağımsız testte
-answerability precision, recall ve F1 değerleri 1,00 elde edildi. Bu kontrollü ve
-küçük benchmark sonucu genel klinik performans iddiası değildir.
+`0.4240`. Eşik sabit tutularak 20 pozitif + 10 negatif bağımsız testte precision
+`1,00`, recall `0,95` ve F1 `0,9744` elde edildi. Bu kontrollü ve küçük benchmark
+sonucu genel klinik performans iddiası değildir.
 
 Yanlış bir tıbbi soruyu cevaplanabilir kabul etmek, cevaplanabilir bir soruyu
 reddetmekten daha riskli görüldüğü için threshold taramasında yanlış kabul
 maliyeti `2`, yanlış ret maliyeti `1` olarak kullanıldı. Yalnızca kalibrasyon
-setinde en yüksek negatif skor `0.43098`, en düşük pozitif skor `0.45928` oldu.
+setinde en yüksek negatif skor `0.41676`, en düşük pozitif skor `0.43128` oldu.
 Sınıflar ayrıldığı için uygulama eşiği bu iki sınırın orta noktası olan
-`0.44513` değerinden dört ondalığa yuvarlanarak **`0.4451`** seçildi. Test seti
+`0.42402` değerinden dört ondalığa yuvarlanarak **`0.4240`** seçildi. Test seti
 eşik seçiminde kullanılmadı.
 
 ChromaDB cosine distance döndürür; karşılaştırılan skor
@@ -139,8 +139,8 @@ altındaysa sistem LLM çağırmadan doğrudan şu çıktıyı verir:
 
 > Bu sorunun cevabı dokümanlarımda yer almamaktadır.
 
-Bağımsız testte 20/20 pozitif soru kabul edilmiş, 10/10 negatif soru reddedilmiş
-ve parent-document Recall@5 `0.95` bulunmuştur. Negatif sorulardaki ayırt edici
+Bağımsız testte 19/20 pozitif soru kabul edilmiş, 10/10 negatif soru reddedilmiş
+ve parent-document Recall@5 `0.85` bulunmuştur. Negatif sorulardaki ayırt edici
 yokluk terimlerinin 1.019 chunk'ın tamamında sıfır kez geçtiği ayrıca
 doğrulanmıştır.
 

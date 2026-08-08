@@ -16,7 +16,7 @@ def test_default_config_loads() -> None:
     assert config.chunking.overlap_tokens == 64
     assert config.embedding.model_id == "magibu/embeddingmagibu-200m"
     assert config.embedding.dimension == 768
-    assert config.retrieval.threshold == 0.4451
+    assert config.retrieval.threshold == 0.4240
     assert config.optional_llm.enabled is False
 
 

@@ -31,9 +31,9 @@ konfigürasyonu, notebook'u, benchmark sorularını ve metrik raporlarını da i
 - Cosine ChromaDB koleksiyonu
 - Threshold kalibrasyonu için ekstra 20 soru
 - Ödev için bağımsız 20 pozitif + 10 negatif soru
-- Seçilen threshold: `0.4451`
-- Testte 20/20 pozitif kabul ve 10/10 negatif ret
-- Parent-document Recall@5: `0.95`
+- Seçilen threshold: `0.4240`
+- Testte 19/20 pozitif kabul ve 10/10 negatif ret
+- Parent-document Recall@5: `0.85`
 
 > Bu sonuçlar küçük ve kontrollü benchmark'a aittir. Klinik doğruluk veya farklı
 > veri dağılımlarına genellenebilirlik iddiası taşımaz.
@@ -51,7 +51,7 @@ flowchart LR
     Q[Kullanıcı sorusu] --> H[Query embedding]
     H --> G
     G --> I[Top-k sonuçlar]
-    I --> J{Skor >= 0.4451?}
+    I --> J{Skor >= 0.4240?}
     J -- Hayır --> K[Dokümanlarımda yer almamaktadır]
     J -- Evet --> L[Kaynak chunk ve URL]
     L -. Opsiyonel .-> M[Qwen3-1.7B yerel cevap]
@@ -295,10 +295,10 @@ olarak tanımlandı.
 
 | Kalibrasyon skoru | Değer |
 |---|---:|
-| En yüksek negatif | 0,43098 |
-| En düşük pozitif | 0,45928 |
-| Orta nokta | 0,44513 |
-| Uygulama threshold'u | **0,4451** |
+| En yüksek negatif | 0,41676 |
+| En düşük pozitif | 0,43128 |
+| Orta nokta | 0,42402 |
+| Uygulama threshold'u | **0,4240** |
 
 Sınıflar ayrıldığı için eşik iki sınırın orta noktasından seçildi. Threshold
 yalnızca kalibrasyon sorularıyla belirlenmiş ve sonrasında dondurulmuştur.
@@ -313,11 +313,11 @@ Threshold altında kesin çıktı:
 
 | Metrik | Kalibrasyon | Test |
 |---|---:|---:|
-| TP / FN | 10 / 0 | 20 / 0 |
+| TP / FN | 10 / 0 | 19 / 1 |
 | TN / FP | 10 / 0 | 10 / 0 |
 | Precision | 1,00 | 1,00 |
-| Recall | 1,00 | 1,00 |
-| F1 | 1,00 | 1,00 |
+| Recall | 1,00 | 0,95 |
+| F1 | 1,00 | 0,9744 |
 | Negatif ret oranı | 1,00 | 1,00 |
 
 ### Retrieval
@@ -325,11 +325,11 @@ Threshold altında kesin çıktı:
 | Metrik | Kalibrasyon | Test |
 |---|---:|---:|
 | Exact chunk Recall@1 | 0,60 | 0,50 |
-| Exact chunk Recall@3 | 0,80 | 0,80 |
-| Exact chunk Recall@5 | 0,90 | 0,90 |
-| Parent document Recall@1 | 0,70 | 0,55 |
-| Parent document Recall@3 | 0,80 | 0,85 |
-| Parent document Recall@5 | 0,90 | 0,95 |
+| Exact chunk Recall@3 | 0,80 | 0,70 |
+| Exact chunk Recall@5 | 0,90 | 0,85 |
+| Parent document Recall@1 | 0,70 | 0,50 |
+| Parent document Recall@3 | 0,80 | 0,70 |
+| Parent document Recall@5 | 0,90 | 0,85 |
 
 Answerability başarısı ile exact evidence sıralaması aynı şey değildir. Örneğin
 PRP veya göz çevresi sorularında aynı bilgiyi taşıyan alternatif makaleler,

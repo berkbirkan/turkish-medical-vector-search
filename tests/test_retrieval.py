@@ -21,7 +21,7 @@ def test_threshold_accepts_sufficient_similarity() -> None:
         question="Soru",
         query_vector=[0.0],
         top_k=1,
-        threshold=0.4451,
+        threshold=0.4240,
         abstention_message="Dokümanlarda yok",
     )
 
@@ -37,10 +37,9 @@ def test_threshold_returns_exact_abstention_message() -> None:
         question="Soru",
         query_vector=[0.0],
         top_k=1,
-        threshold=0.4451,
+        threshold=0.4240,
         abstention_message=message,
     )
 
     assert result.answerable is False
     assert result.message == message
-
