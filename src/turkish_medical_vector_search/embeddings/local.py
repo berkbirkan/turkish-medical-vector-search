@@ -28,9 +28,14 @@ class LocalSentenceEmbedder:
             # The published config stores this as a list while recent
             # Transformers versions expect a mapping. The model's custom
             # pre-tokenizer is a simple Split, not the affected Mistral regex.
-            tokenizer_kwargs={"extra_special_tokens": {}},
+            processor_kwargs={"extra_special_tokens": {}},
         )
-        actual_dimension = self.model.get_sentence_embedding_dimension()
+        dimension_getter = getattr(
+            self.model,
+            "get_embedding_dimension",
+            self.model.get_sentence_embedding_dimension,
+        )
+        actual_dimension = dimension_getter()
         if actual_dimension != expected_dimension:
             raise ValueError(
                 f"Expected {expected_dimension} dimensions from {model_id}, got {actual_dimension}"
@@ -44,8 +49,14 @@ class LocalSentenceEmbedder:
             raise ValueError("Embedding output contains NaN or infinite values")
         if self.normalize:
             norms = np.linalg.norm(vectors, axis=1)
-            if not np.allclose(norms, 1.0, atol=1e-4):
-                raise ValueError("Embedding output is not L2-normalized")
+            if np.any(norms <= np.finfo(np.float32).eps):
+                raise ValueError("Embedding output contains a zero-length vector")
+            # Some Sentence Transformers/model combinations leave small norm
+            # drift even with normalize_embeddings=True. Enforce the public
+            # L2-normalized vector contract explicitly and deterministically.
+            vectors = vectors / norms[:, None]
+            if not np.allclose(np.linalg.norm(vectors, axis=1), 1.0, atol=1e-5):
+                raise ValueError("Embedding output could not be L2-normalized")
         return vectors
 
     def encode_documents(self, texts: Sequence[str], *, batch_size: int) -> np.ndarray:
