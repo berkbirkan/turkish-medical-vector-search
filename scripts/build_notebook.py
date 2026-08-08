@@ -59,32 +59,66 @@ Kalibrasyon/test ayrımı threshold'un test verisine aşırı uyumunu önler.
         """
 ## 0. Ortam kurulumu
 
-Notebook repo kökünden çalıştırılmalıdır. Colab kullanıyorsanız repoyu klonlayıp
-çalışma dizinini repo köküne alın. Kurulum hücresi Sentence Transformers 5.2+
-ve notebook bağımlılıklarını yükler.
+Notebook, repo kökünden veya `notebooks/` klasöründen açılabilir. Kurulum hücresi
+önce gerçek proje kökünü bulur, sonra bağımlılıkları **bu notebook'un aktif
+Python kernelına** kurar. Terminaldeki `pip` ile kernelın Python'u farklı
+olabileceği için kurulum `sys.executable -m pip` üzerinden yapılır.
+
+Proje Python 3.10+ gerektirir. VS Code'da sağ üstte görünen kernel daha eskiyse
+önce Python 3.10 veya daha yeni bir kernel seçilmelidir. Colab'ın güncel Python
+sürümü doğrudan desteklenir.
 """
     ),
     code(
         """
 from pathlib import Path
-import os
+import importlib
 import subprocess
 import sys
 
 IN_COLAB = "google.colab" in sys.modules
-PROJECT_ROOT = Path.cwd()
-if PROJECT_ROOT.name == "notebooks":
-    PROJECT_ROOT = PROJECT_ROOT.parent
-assert (PROJECT_ROOT / "pyproject.toml").exists(), "Notebook'u repo kökünden çalıştırın."
 
-INSTALL_DEPENDENCIES = IN_COLAB
+
+def find_project_root(start: Path) -> Path:
+    # Find the repository root from either the root or notebooks directory.
+    start = start.resolve()
+    for candidate in (start, *start.parents):
+        if (candidate / "pyproject.toml").is_file() and (candidate / "src").is_dir():
+            return candidate
+    raise FileNotFoundError(
+        "Proje kökü bulunamadı. Notebook'u klonlanmış "
+        "turkish-medical-vector-search reposunun içinden açın."
+    )
+
+
+PROJECT_ROOT = find_project_root(Path.cwd())
+
+if sys.version_info < (3, 10):
+    raise RuntimeError(
+        f"Bu proje Python 3.10+ gerektirir; aktif kernel {sys.version.split()[0]}. "
+        "VS Code sağ üst menüsünden Python 3.10 veya daha yeni bir kernel seçin."
+    )
+
+# Varsayılan True: sürüm uyuşmazlıklarını da düzeltir; paketler güncelse pip no-op olur.
+INSTALL_DEPENDENCIES = True
+
 if INSTALL_DEPENDENCIES:
+    print("Notebook bağımlılıkları aktif kernela kuruluyor:", sys.executable)
     subprocess.run(
-        [sys.executable, "-m", "pip", "install", "-q", "-e", ".[notebook]"],
-        cwd=PROJECT_ROOT,
+        [sys.executable, "-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel"],
         check=True,
     )
-print("Project root:", PROJECT_ROOT)
+    subprocess.run(
+        [sys.executable, "-m", "pip", "install", "-e", f"{PROJECT_ROOT}[notebook]"],
+        check=True,
+    )
+    importlib.invalidate_caches()
+else:
+    print("Gerekli bağımlılıklar aktif kernelda zaten kurulu.")
+
+print("Python:", sys.executable)
+print("Python sürümü:", sys.version.split()[0])
+print("Proje kökü:", PROJECT_ROOT)
 """
     ),
     markdown(
@@ -98,12 +132,15 @@ Pydantic tarafından reddedilir; böylece yazım hatalı bir config sessizce
     ),
     code(
         """
-import sys
-sys.path.insert(0, str(PROJECT_ROOT / "src"))
+src_path = str(PROJECT_ROOT / "src")
+if src_path not in sys.path:
+    sys.path.insert(0, src_path)
 
 from turkish_medical_vector_search.config import load_config
 
-config = load_config(PROJECT_ROOT / "configs/default.yaml")
+config_path = PROJECT_ROOT / "configs" / "default.yaml"
+assert config_path.is_file(), f"Config bulunamadı: {config_path}"
+config = load_config(config_path)
 print(config.model_dump_json(indent=2))
 """
     ),
